@@ -13,15 +13,16 @@ def create_app(config_name='default'):
     # Initialize CORS
     CORS(app)
     
-    # Test database connection
-    try:
-        from app.database import test_connection
-        if test_connection():
-            print('✓ Database connection successful')
-        else:
-            print('⚠️  WARNING: Database connection failed!')
-    except Exception as e:
-        print(f'⚠️  WARNING: Database not configured: {e}')
+    # Test database connection (within app context)
+    with app.app_context():
+        try:
+            from app.database import test_connection
+            if test_connection():
+                print('✓ Database connection successful')
+            else:
+                print('⚠️  WARNING: Database connection failed!')
+        except Exception as e:
+            print(f'⚠️  WARNING: Database not configured: {e}')
     
     # Validate required configuration
     if not app.config['RAZORPAY_KEY_ID'] or not app.config['RAZORPAY_KEY_SECRET']:
@@ -45,6 +46,16 @@ def create_app(config_name='default'):
     app.register_blueprint(otp_bp)
     app.register_blueprint(validation_bp)
     app.register_blueprint(payment_bp)
+    
+    # Root health check route
+    @app.route('/')
+    def index():
+        from flask import jsonify
+        return jsonify({
+            'status': 'ok',
+            'service': 'Webinar Registration API',
+            'version': '1.0'
+        })
     
     # Request logger middleware
     @app.before_request
