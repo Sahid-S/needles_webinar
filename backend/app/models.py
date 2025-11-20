@@ -204,3 +204,76 @@ class Payment:
                     'status': row[3]
                 }
             return None
+
+
+class Settings:
+    """Settings model for webinar configuration"""
+    
+    @staticmethod
+    def get_setting(key):
+        """Get a setting value by key"""
+        with get_db_cursor() as cursor:
+            cursor.execute(
+                "SELECT value FROM settings WHERE setting_key = ?",
+                (key,)
+            )
+            row = cursor.fetchone()
+            return row[0] if row else None
+    
+    @staticmethod
+    def set_setting(key, value):
+        """Set or update a setting value"""
+        with get_db_cursor() as cursor:
+            # Check if setting exists
+            cursor.execute(
+                "SELECT id FROM settings WHERE setting_key = ?",
+                (key,)
+            )
+            exists = cursor.fetchone()
+            
+            if exists:
+                # Update existing
+                cursor.execute(
+                    "UPDATE settings SET value = ?, updated_at = GETDATE() WHERE setting_key = ?",
+                    (value, key)
+                )
+            else:
+                # Insert new
+                cursor.execute(
+                    "INSERT INTO settings (setting_key, value) VALUES (?, ?)",
+                    (key, value)
+                )
+            
+            return True
+    
+    @staticmethod
+    def get_all_settings():
+        """Get all settings as a dictionary"""
+        with get_db_cursor() as cursor:
+            cursor.execute("SELECT setting_key, value FROM settings")
+            rows = cursor.fetchall()
+            return {row[0]: row[1] for row in rows}
+    
+    @staticmethod
+    def get_webinar_info():
+        """Get webinar date and time information"""
+        settings = Settings.get_all_settings()
+        return {
+            'webinar_date': settings.get('webinar_date', 'December 10, 2025'),
+            'webinar_time': settings.get('webinar_time', '9:00 AM - 12:00 PM IST'),
+            'webinar_title': settings.get('webinar_title', 'The Needles Webinar'),
+            'zoom_link': settings.get('zoom_link', '')
+        }
+    
+    @staticmethod
+    def update_webinar_info(date=None, time=None, title=None, zoom_link=None):
+        """Update webinar information"""
+        if date:
+            Settings.set_setting('webinar_date', date)
+        if time:
+            Settings.set_setting('webinar_time', time)
+        if title:
+            Settings.set_setting('webinar_title', title)
+        if zoom_link:
+            Settings.set_setting('zoom_link', zoom_link)
+        return True

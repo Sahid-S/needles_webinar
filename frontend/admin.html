@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - The Needles Webinar</title>
+    <link rel="icon" type="image/png" href="images/NeedlesLogo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;900&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #006478;
+            --accent-color: #fee901;
+            --text-dark: #090909;
+            --text-light: #4f4f4f;
+            --bg-light: #ffffff;
+            --bg-off-white: #fefefe;
+            --bg-light-blue: #f0f8f9;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #f0f8f9 0%, #e8f5f7 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .admin-header {
+            background: white;
+            color: #090909;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .admin-header h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: #006478;
+        }
+        
+        .admin-logo {
+            max-width: 200px;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .admin-header p {
+            font-size: 16px;
+            color: #4f4f4f;
+        }
+
+        .logout-btn {
+            background: linear-gradient(99deg, #fee901 0%, #006478 100%);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            float: right;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 100, 120, 0.4);
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .card h2 {
+            font-family: 'Poppins', sans-serif;
+            color: #006478;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #006478 0%, #004d5c 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-card.success {
+            background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+        }
+
+        .stat-card.pending {
+            background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+        }
+
+        .stat-number {
+            font-size: 48px;
+            font-weight: 900;
+            font-family: 'Poppins', sans-serif;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: border-color 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #006478;
+        }
+
+        .btn {
+            background: linear-gradient(99deg, #fee901 0%, #006478 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 100, 120, 0.3);
+            transition: all 0.3s;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 100, 120, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            background: #f5f5f5;
+            font-weight: 600;
+            color: #333;
+        }
+
+        tr:hover {
+            background: #f9f9f9;
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .back-link {
+            display: inline-block;
+            color: #006478;
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 20px;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover {
+            color: #004d5c;
+        }
+
+        .back-link::before {
+            content: '← ';
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">Back to Home</a>
+
+        <div class="admin-header">
+            <button class="logout-btn" onclick="logout()">Logout</button>
+            <img src="images/NeedlesWordLogo.png" alt="The Needles" class="admin-logo">
+            <h1>🎯 Admin Panel</h1>
+            <p>Manage webinar registrations and send Zoom links</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="total-registrations">-</div>
+                <div class="stat-label">Total Registrations</div>
+            </div>
+            <div class="stat-card success">
+                <div class="stat-number" id="paid-registrations">-</div>
+                <div class="stat-label">Paid Registrations</div>
+            </div>
+            <div class="stat-card pending">
+                <div class="stat-number" id="pending-registrations">-</div>
+                <div class="stat-label">Pending Payments</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>⚙️ Webinar Settings</h2>
+            <p style="color: #666; margin-bottom: 20px; font-size: 14px;">Update these settings to change what appears on the registration page</p>
+            
+            <div id="settings-alert-container"></div>
+
+            <form id="settings-form">
+                <div class="form-group">
+                    <label class="form-label">Webinar Date *</label>
+                    <input type="date" id="settings-webinar-date" class="form-input" required>
+                    <small style="color: #999; display: block; margin-top: 5px;">Date will be displayed as "Month Day, Year" format</small>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Webinar Time *</label>
+                    <input type="text" id="settings-webinar-time" class="form-input" placeholder="9:00 AM - 12:00 PM IST" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Webinar Title</label>
+                    <input type="text" id="settings-webinar-title" class="form-input" placeholder="The Needles Webinar">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Zoom Meeting Link (Saved for quick access)</label>
+                    <input type="url" id="settings-zoom-link" class="form-input" placeholder="https://zoom.us/j/1234567890">
+                    <small style="color: #999; display: block; margin-top: 5px;">This will auto-fill when sending emails below</small>
+                </div>
+
+                <button type="submit" class="btn" id="settings-btn">
+                    💾 Save Webinar Settings
+                </button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>📧 Send Webinar Zoom Link</h2>
+            
+            <div id="alert-container"></div>
+
+            <form id="send-links-form">
+                <div class="form-group">
+                    <label class="form-label">Zoom Meeting Link *</label>
+                    <input type="url" id="zoom-link" class="form-input" placeholder="https://zoom.us/j/1234567890" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Webinar Date</label>
+                    <input type="text" id="webinar-date" class="form-input" value="December 10, 2025">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Webinar Time</label>
+                    <input type="text" id="webinar-time" class="form-input" value="9:00 AM - 12:00 PM IST">
+                </div>
+
+                <button type="submit" class="btn" id="send-btn">
+                    Send Zoom Links to All Participants
+                </button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>👥 Registered Participants</h2>
+            <button onclick="loadRegistrations()" class="btn" style="margin-bottom: 20px; padding: 10px 25px; font-size: 14px;">
+                🔄 Refresh Data
+            </button>
+            
+            <div class="table-container">
+                <table id="registrations-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>City</th>
+                            <th>Payment Status</th>
+                            <th>Registered</th>
+                        </tr>
+                    </thead>
+                    <tbody id="registrations-tbody">
+                        <tr>
+                            <td colspan="7" style="text-align: center; padding: 40px;">
+                                Loading registrations...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    </div>
+    <!-- End Admin Panel Content -->
+
+    <style>
+        .login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #006478 0%, #004d5c 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .login-box {
+            background: white;
+            padding: 50px 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            max-width: 450px;
+            width: 90%;
+        }
+
+        .login-box h2 {
+            font-family: 'Poppins', sans-serif;
+            color: #006478;
+            font-size: 32px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .login-box p {
+            color: #666;
+            font-size: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #006478 0%, #004d5c 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 30px;
+        }
+
+        .admin-panel {
+            display: none;
+        }
+
+        .login-overlay.hidden {
+            display: none;
+        }
+
+        .admin-panel.visible {
+            display: block;
+        }
+    </style>
+
+    <!-- Login Overlay -->
+    <div class="login-overlay" id="login-overlay">
+        <div class="login-box">
+            <div class="login-icon">🔐</div>
+            <h2>Admin Login</h2>
+            <p>Access the webinar management panel</p>
+
+            <div id="login-alert"></div>
+
+            <form id="login-form">
+                <div class="form-group">
+                    <label class="form-label">Username</label>
+                    <input type="text" id="login-username" class="form-input" placeholder="Enter admin username" required autocomplete="username">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" id="login-password" class="form-input" placeholder="Enter password" required autocomplete="current-password">
+                </div>
+
+                <button type="submit" class="btn" id="login-btn" style="width: 100%; margin-top: 10px;">
+                    Login to Admin Panel
+                </button>
+            </form>
+
+            <a href="index.html" style="display: block; text-align: center; margin-top: 25px; color: #666; text-decoration: none; font-size: 14px;">← Back to Home</a>
+        </div>
+    </div>
+
+    <!-- Admin Panel Content -->
+    <div class="admin-panel" id="admin-panel">
+
+    <script>
+        const API_URL = 'http://localhost:3000';
+        let ADMIN_KEY = sessionStorage.getItem('admin_key');
+
+        // Date conversion functions
+        function convertToDateInput(displayDate) {
+            // Convert "December 10, 2024" to "2024-12-10"
+            try {
+                const date = new Date(displayDate);
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            } catch (e) {
+                console.error('Error converting date:', e);
+                return '';
+            }
+        }
+
+        function convertToDisplayFormat(dateInput) {
+            // Convert "2024-12-10" to "December 10, 2024"
+            try {
+                const date = new Date(dateInput);
+                const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                return date.toLocaleDateString('en-US', options);
+            } catch (e) {
+                console.error('Error converting date:', e);
+                return dateInput;
+            }
+        }
+
+        // Check if admin is already logged in
+        if (ADMIN_KEY) {
+            showAdminPanel();
+            loadWebinarSettings();
+            loadRegistrations();
+        }
+
+        // Handle login
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+            const loginBtn = document.getElementById('login-btn');
+
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<span class="loading"></span> Logging in...';
+
+            try {
+                // Call backend authentication API
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    // Store admin token securely
+                    ADMIN_KEY = data.token;
+                    sessionStorage.setItem('admin_key', ADMIN_KEY);
+                    sessionStorage.setItem('admin_username', data.username);
+                    
+                    // Hide login, show admin panel
+                    showAdminPanel();
+                    loadWebinarSettings();
+                    loadRegistrations();
+                } else {
+                    throw new Error(data.message || 'Invalid credentials');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                document.getElementById('login-alert').innerHTML = `<div class="alert error" style="display: block;">${error.message || 'Login failed. Please try again.'}</div>`;
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = 'Login to Admin Panel';
+                
+                setTimeout(() => {
+                    document.getElementById('login-alert').innerHTML = '';
+                }, 4000);
+            }
+        });
+
+        function showAdminPanel() {
+            document.getElementById('login-overlay').classList.add('hidden');
+            document.getElementById('admin-panel').classList.add('visible');
+        }
+
+        async function loadWebinarSettings() {
+            try {
+                const response = await fetch(`${API_URL}/admin/webinar-settings`, {
+                    headers: {
+                        'X-Admin-Token': ADMIN_KEY
+                    }
+                });
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    if (response.status === 401) {
+                        sessionStorage.removeItem('admin_key');
+                        sessionStorage.removeItem('admin_username');
+                        document.getElementById('login-overlay').classList.remove('hidden');
+                        document.getElementById('admin-panel').classList.remove('visible');
+                        return;
+                    }
+                    throw new Error(data.message || 'Failed to load settings');
+                }
+
+                const settings = data.settings;
+                
+                // Populate settings form
+                // Convert "Month Day, Year" to "YYYY-MM-DD" for date input
+                document.getElementById('settings-webinar-date').value = convertToDateInput(settings.webinar_date);
+                document.getElementById('settings-webinar-time').value = settings.webinar_time;
+                document.getElementById('settings-webinar-title').value = settings.webinar_title;
+                document.getElementById('settings-zoom-link').value = settings.zoom_link || '';
+                
+                // Auto-fill the send links form
+                document.getElementById('webinar-date').value = settings.webinar_date;
+                document.getElementById('webinar-time').value = settings.webinar_time;
+                if (settings.zoom_link) {
+                    document.getElementById('zoom-link').value = settings.zoom_link;
+                }
+
+            } catch (error) {
+                console.error('Error loading webinar settings:', error);
+            }
+        }
+
+        // Handle webinar settings form submission
+        document.getElementById('settings-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const settingsBtn = document.getElementById('settings-btn');
+            settingsBtn.disabled = true;
+            settingsBtn.innerHTML = '<span class="loading"></span> Saving...';
+
+            try {
+                const response = await fetch(`${API_URL}/admin/webinar-settings`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Admin-Token': ADMIN_KEY
+                    },
+                    body: JSON.stringify({
+                        webinar_date: convertToDisplayFormat(document.getElementById('settings-webinar-date').value),
+                        webinar_time: document.getElementById('settings-webinar-time').value,
+                        webinar_title: document.getElementById('settings-webinar-title').value,
+                        zoom_link: document.getElementById('settings-zoom-link').value
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    if (response.status === 401) {
+                        showSettingsAlert('error', 'Session expired. Please login again.');
+                        sessionStorage.removeItem('admin_key');
+                        sessionStorage.removeItem('admin_username');
+                        document.getElementById('login-overlay').classList.remove('hidden');
+                        document.getElementById('admin-panel').classList.remove('visible');
+                        return;
+                    }
+                    throw new Error(data.message || 'Failed to save settings');
+                }
+
+                showSettingsAlert('success', '✓ Webinar settings saved! Changes will appear on the registration page.');
+                
+                // Update the send links form with new values
+                const settings = data.settings;
+                document.getElementById('webinar-date').value = settings.webinar_date;
+                document.getElementById('webinar-time').value = settings.webinar_time;
+                if (settings.zoom_link) {
+                    document.getElementById('zoom-link').value = settings.zoom_link;
+                }
+
+            } catch (error) {
+                console.error('Error saving settings:', error);
+                showSettingsAlert('error', error.message);
+            } finally {
+                settingsBtn.disabled = false;
+                settingsBtn.innerHTML = '💾 Save Webinar Settings';
+            }
+        });
+
+        function showSettingsAlert(type, message) {
+            const alertHtml = `
+                <div class="alert ${type}">
+                    ${message}
+                </div>
+            `;
+            document.getElementById('settings-alert-container').innerHTML = alertHtml;
+            
+            setTimeout(() => {
+                document.getElementById('settings-alert-container').innerHTML = '';
+            }, 5000);
+        }
+
+        async function loadRegistrations() {
+            try {
+                const response = await fetch(`${API_URL}/admin/registrations`, {
+                    headers: {
+                        'X-Admin-Token': ADMIN_KEY
+                    }
+                });
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    if (response.status === 401) {
+                        showAlert('error', 'Session expired. Please login again.');
+                        sessionStorage.removeItem('admin_key');
+                        sessionStorage.removeItem('admin_username');
+                        document.getElementById('login-overlay').classList.remove('hidden');
+                        document.getElementById('admin-panel').classList.remove('visible');
+                        return;
+                    }
+                    throw new Error(data.message || 'Failed to load registrations');
+                }
+
+                const registrations = data.registrations;
+                
+                // Update stats
+                const paidCount = registrations.filter(r => r.payment_status === 'success').length;
+                const pendingCount = registrations.filter(r => r.payment_status === 'pending').length;
+                
+                document.getElementById('total-registrations').textContent = registrations.length;
+                document.getElementById('paid-registrations').textContent = paidCount;
+                document.getElementById('pending-registrations').textContent = pendingCount;
+
+                // Update table
+                const tbody = document.getElementById('registrations-tbody');
+                if (registrations.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px;">No registrations found</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = registrations.map(reg => `
+                    <tr>
+                        <td>${reg.id}</td>
+                        <td>${reg.full_name}</td>
+                        <td>${reg.email}</td>
+                        <td>${reg.phone}</td>
+                        <td>${reg.city || '-'}</td>
+                        <td>
+                            <span class="status-badge ${reg.payment_status === 'success' ? 'status-success' : 'status-pending'}">
+                                ${reg.payment_status === 'success' ? '✓ Paid' : '⏳ Pending'}
+                            </span>
+                        </td>
+                        <td>${formatDate(reg.created_at)}</td>
+                    </tr>
+                `).join('');
+
+            } catch (error) {
+                console.error('Error loading registrations:', error);
+                showAlert('error', error.message);
+            }
+        }
+
+        document.getElementById('send-links-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const zoomLink = document.getElementById('zoom-link').value;
+            const webinarDate = document.getElementById('webinar-date').value;
+            const webinarTime = document.getElementById('webinar-time').value;
+            const sendBtn = document.getElementById('send-btn');
+
+            sendBtn.disabled = true;
+            sendBtn.innerHTML = '<span class="loading"></span> Sending emails...';
+
+            try {
+                const response = await fetch(`${API_URL}/admin/send-webinar-links`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Admin-Token': ADMIN_KEY
+                    },
+                    body: JSON.stringify({
+                        zoom_link: zoomLink,
+                        webinar_date: webinarDate,
+                        webinar_time: webinarTime
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    if (response.status === 401) {
+                        showAlert('error', 'Session expired. Please login again.');
+                        sessionStorage.removeItem('admin_key');
+                        sessionStorage.removeItem('admin_username');
+                        document.getElementById('login-overlay').classList.remove('hidden');
+                        document.getElementById('admin-panel').classList.remove('visible');
+                        return;
+                    }
+                    throw new Error(data.message || 'Failed to send emails');
+                }
+
+                showAlert('success', `✓ Successfully sent ${data.sent} emails out of ${data.total} registrations${data.failed > 0 ? '. ' + data.failed + ' failed.' : '!'}`);
+                
+                if (data.failed_emails && data.failed_emails.length > 0) {
+                    console.error('Failed emails:', data.failed_emails);
+                }
+
+            } catch (error) {
+                console.error('Error sending emails:', error);
+                showAlert('error', error.message);
+            } finally {
+                sendBtn.disabled = false;
+                sendBtn.innerHTML = 'Send Zoom Links to All Participants';
+            }
+        });
+
+        function showAlert(type, message) {
+            const alertHtml = `
+                <div class="alert ${type}">
+                    ${message}
+                </div>
+            `;
+            document.getElementById('alert-container').innerHTML = alertHtml;
+            
+            setTimeout(() => {
+                document.getElementById('alert-container').innerHTML = '';
+            }, 5000);
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-IN', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function logout() {
+            sessionStorage.removeItem('admin_key');
+            sessionStorage.removeItem('admin_username');
+            ADMIN_KEY = null;
+            document.getElementById('admin-panel').classList.remove('visible');
+            document.getElementById('login-overlay').classList.remove('hidden');
+            document.getElementById('login-form').reset();
+        }
+    </script>
+</body>
+</html>

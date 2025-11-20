@@ -1,0 +1,10 @@
+{
+  "name": "The Needles Webinar Registration",
+  "short_name": "Needles Webinar",
+  "description": "Registration platform for The Needles webinar",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#006478",
+  "serviceworker": {}
+}

@@ -42,10 +42,16 @@ def create_app(config_name='default'):
     from app.routes.otp import otp_bp
     from app.routes.validation import validation_bp
     from app.routes.payment import payment_bp
+    from app.routes.admin import admin_bp
+    from app.routes.auth import auth_bp
+    from app.routes.public import public_bp
     
     app.register_blueprint(otp_bp)
     app.register_blueprint(validation_bp)
     app.register_blueprint(payment_bp)
+    app.register_blueprint(admin_bp, url_prefix='/admin')
+    app.register_blueprint(auth_bp, url_prefix='/auth')
+    app.register_blueprint(public_bp)
     
     # Root health check route
     @app.route('/')

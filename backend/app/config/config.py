@@ -19,7 +19,7 @@ class Config:
     SMTP_PORT = 587
     SMTP_USERNAME = os.getenv('SMTP_USERNAME') or os.getenv('EMAIL_USER')
     SMTP_PASSWORD = os.getenv('SMTP_PASSWORD') or os.getenv('EMAIL_PASS')
-    VERIFIED_SENDER = os.getenv('VERIFIED_SENDER', 'jamindustries.info@gmail.com')
+    VERIFIED_SENDER = os.getenv('VERIFIED_SENDER', 'info@theneedles.in')
     
     # OTP Configuration
     OTP_EXPIRY_MINUTES = 10

@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Generated Page</title>
+  <link rel="icon" type="image/png" href="images/NeedlesLogo.png">
+  <link rel="manifest" href="manifest.json">
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -43,7 +45,7 @@ iframe::-webkit-scrollbar {
 
 /* CSS for section section:hero */
 .hero-section {
-    padding-top: 50px;
+    padding-top: 0px;
     padding-bottom: 80px;
     overflow: visible;
 }
@@ -555,7 +557,6 @@ iframe::-webkit-scrollbar {
     text-decoration: underline;
 }
   </style>
-  <script src="global.js" defer></script>
 </head>
 <body>
 <section id="hero" class="hero-section">
@@ -564,6 +565,7 @@ iframe::-webkit-scrollbar {
         <img src="images/2_24.svg" alt="Decorative Dandelion" class="dandelion-svg">
         <div class="container">
             <div class="hero-content">
+                <img src="images/NeedlesWordLogo.png" alt="The Needles" style="max-width: 300px; margin-bottom: 30px;">
                 <div class="hero-badge">
                     <p>Perfect for Beginners to start a Boutique or to those who wants to start a Business.</p>
                 </div>
@@ -635,14 +637,14 @@ iframe::-webkit-scrollbar {
                         <img src="images/2_127.svg" alt="Date Icon" class="info-icon">
                         <div class="info-text">
                             <p class="info-label">DATE</p>
-                            <p class="info-value">17th August<br>2025</p>
+                            <p class="info-value" id="webinar-date-card">Loading...</p>
                         </div>
                     </div>
                     <div class="info-card">
                         <img src="images/2_142.svg" alt="Time Icon" class="info-icon">
                         <div class="info-text">
                             <p class="info-label">TIME</p>
-                            <p class="info-value">10AM - 1PM<br>(IST)</p>
+                            <p class="info-value" id="webinar-time-card">Loading...</p>
                         </div>
                     </div>
                     <div class="info-card">
@@ -762,7 +764,7 @@ iframe::-webkit-scrollbar {
             <details class="faq-item">
                 <summary class="faq-question">When is the webinar scheduled?</summary>
                 <div class="faq-answer">
-                    <p>The webinar is scheduled for 10th December 2025, from 9 AM to 12 PM (IST).</p>
+                    <p>The webinar is scheduled for <span id="webinar-date-time">10th December 2025, from 9 AM to 12 PM (IST)</span>.</p>
                 </div>
             </details>
             <details class="faq-item">
@@ -789,13 +791,76 @@ iframe::-webkit-scrollbar {
             <a href="pages/privacy-policy.html" style="color: #006478; margin: 0 15px; text-decoration: none;">Privacy Policy</a> |
             <a href="pages/terms-conditions.html" style="color: #006478; margin: 0 15px; text-decoration: none;">Terms & Conditions</a> |
             <a href="pages/refund-policy.html" style="color: #006478; margin: 0 15px; text-decoration: none;">Refund Policy</a> |
-            <a href="pages/contact.html" style="color: #006478; margin: 0 15px; text-decoration: none;">Contact Us</a>
+            <a href="pages/contact-1.html" style="color: #006478; margin: 0 15px; text-decoration: none;">Contact Us</a> |
+            <a href="admin.html" style="color: #999; margin: 0 15px; text-decoration: none; font-size: 12px; opacity: 0.7;" title="Admin Access">🔐 Admin</a>
         </div>
         <p class="copyright">Copyright © 2025 , The Needles. All rights reserved.</p>
         <p class="disclaimer">This site is not a part of the Meta™ Inc. Additionally, this site is not endorsed by Meta™ in any way. All content provided on this page is for informational and promotional purposes only. Results may vary and are not guaranteed.</p>
     </div>
 </footer>
 
+<script>
+    // Load webinar info dynamically
+    (async function() {
+        try {
+            const response = await fetch('http://localhost:3000/webinar-info');
+            const data = await response.json();
+            
+            if (data.success) {
+                // Update FAQ section
+                const dateTime = `${data.webinar_date}, ${data.webinar_time}`;
+                const faqElem = document.getElementById('webinar-date-time');
+                if (faqElem) {
+                    faqElem.textContent = dateTime;
+                }
+                
+                // Update Webinar Details cards
+                const dateCard = document.getElementById('webinar-date-card');
+                const timeCard = document.getElementById('webinar-time-card');
+                
+                if (dateCard) {
+                    dateCard.innerHTML = data.webinar_date.replace(', ', '<br>');
+                }
+                
+                if (timeCard) {
+                    timeCard.innerHTML = data.webinar_time.replace(' - ', '<br>');
+                }
+                
+                console.log('✓ Webinar info updated successfully');
+            }
+        } catch (error) {
+            console.log('Using default webinar info');
+        }
+    })();
+
+    // Check registration status
+    (async function() {
+        try {
+            const response = await fetch('http://localhost:3000/registration-status');
+            const data = await response.json();
+            
+            if (!data.registration_open) {
+                // Find all CTA buttons and update them
+                const ctaButtons = document.querySelectorAll('.btn-cta');
+                ctaButtons.forEach(button => {
+                    button.style.opacity = '0.6';
+                    button.style.cursor = 'not-allowed';
+                    button.textContent = 'Registration Closed';
+                    button.onclick = function(e) {
+                        e.preventDefault();
+                        alert('Registration for this webinar has closed as the webinar date has passed.');
+                        return false;
+                    };
+                });
+                console.log('✓ Registration status: CLOSED');
+            } else {
+                console.log('✓ Registration status: OPEN');
+            }
+        } catch (error) {
+            console.log('Using default registration status (open)');
+        }
+    })();
+</script>
 
 </body>
 </html>

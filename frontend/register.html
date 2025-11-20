@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Register - Fashion Business Webinar</title>
+  <link rel="icon" type="image/png" href="images/NeedlesLogo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@275;300;400;500;600;700;900&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
@@ -181,6 +182,82 @@
     .btn-send-otp:disabled {
         background: #ccc;
         cursor: not-allowed;
+    }
+    
+    .btn-loader {
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        border: 2px solid #ffffff;
+        border-top-color: transparent;
+        border-radius: 50%;
+        animation: spin 0.6s linear infinite;
+        vertical-align: middle;
+        margin-right: 8px;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    /* Payment Verification Loader */
+    .payment-loader-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 10000;
+    }
+    
+    .payment-loader-overlay.active {
+        display: flex;
+    }
+    
+    .payment-loader-content {
+        background: white;
+        padding: 50px 60px;
+        border-radius: 20px;
+        text-align: center;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        max-width: 400px;
+    }
+    
+    .payment-loader-spinner {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 25px;
+        animation: pulse 1.5s ease-in-out infinite;
+    }
+    
+    .payment-loader-spinner img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.1); opacity: 0.8; }
+    }
+    
+    .payment-loader-content h3 {
+        color: #006478;
+        font-size: 24px;
+        margin: 0 0 15px;
+        font-family: 'Poppins', sans-serif;
+    }
+    
+    .payment-loader-content p {
+        color: #666;
+        font-size: 16px;
+        margin: 0;
+        line-height: 1.5;
     }
     
     .btn-verify-otp {
@@ -383,17 +460,42 @@
   </style>
 </head>
 <body>
+<!-- Payment Verification Loader -->
+<div id="payment-loader" class="payment-loader-overlay">
+    <div class="payment-loader-content">
+        <div class="payment-loader-spinner">
+            <img src="images/NeedlesLogo.png" alt="The Needles Logo">
+        </div>
+        <h3>Verifying Payment</h3>
+        <p>Please wait while we confirm your payment...<br>Do not close this page.</p>
+    </div>
+</div>
+
 <div class="page-wrapper">
     <section class="registration-section">
         <div class="container">
             <a href="index.html" class="back-link">Back to Home</a>
             
             <div class="registration-header">
+                <img src="images/NeedlesWordLogo.png" alt="The Needles" style="max-width: 280px; margin-bottom: 25px;">
                 <h1>Register for the Webinar</h1>
                 <p>Fill in your details below to secure your spot in the Fashion Business Webinar</p>
             </div>
+
+            <!-- Registration Closed Notice -->
+            <div id="registration-closed-notice" style="display: none;">
+                <div style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); color: white; padding: 40px; border-radius: 16px; text-align: center; margin-bottom: 30px; box-shadow: 0 8px 16px rgba(0,0,0,0.2);">
+                    <h2 style="margin: 0 0 15px 0; font-size: 32px;">🔒 Registration Closed</h2>
+                    <p style="margin: 0; font-size: 18px; line-height: 1.6;">
+                        Registration for this webinar has been closed. The webinar has already started or ended.
+                    </p>
+                    <p style="margin: 20px 0 0 0; font-size: 16px;">
+                        Please check back for future webinars or <a href="index.html" style="color: #fff; text-decoration: underline;">visit our homepage</a>.
+                    </p>
+                </div>
+            </div>
             
-            <div class="registration-card">
+            <div class="registration-card" id="registration-form-container">
                 <form id="registration-form">
                     <h2 class="form-section-title">Personal Information</h2>
                     
@@ -430,14 +532,20 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="phone" class="form-label">Phone Number<span class="required">*</span></label>
-                            <input type="tel" id="phone" name="phone" class="form-input" placeholder="+91 98765 43210" required pattern="[0-9+\s\-()]{10,15}">
-                            <span class="error-message" id="phone-error">Please enter a valid phone number</span>
+                            <div style="display: flex; gap: 8px;">
+                                <input type="text" value="+91" readonly style="width: 60px; padding: 14px 10px; font-size: 16px; background-color: #f0f0f0; border: 2px solid #e9e9e9; border-radius: 10px; text-align: center; color: #666;">
+                                <input type="tel" id="phone" name="phone" class="form-input" placeholder="98765 43210" required pattern="[0-9]{10}" style="flex: 1;">
+                            </div>
+                            <span class="error-message" id="phone-error">Please enter a valid 10-digit phone number</span>
                         </div>
                         
                         <div class="form-group">
                             <label for="whatsapp" class="form-label">WhatsApp Number<span class="required">*</span></label>
-                            <input type="tel" id="whatsapp" name="whatsapp" class="form-input" placeholder="+91 98765 43210" required pattern="[0-9+\s\-()]{10,15}">
-                            <span class="error-message" id="whatsapp-error">Please enter a valid WhatsApp number</span>
+                            <div style="display: flex; gap: 8px;">
+                                <input type="text" value="+91" readonly style="width: 60px; padding: 14px 10px; font-size: 16px; background-color: #f0f0f0; border: 2px solid #e9e9e9; border-radius: 10px; text-align: center; color: #666;">
+                                <input type="tel" id="whatsapp" name="whatsapp" class="form-input" placeholder="98765 43210" required pattern="[0-9]{10}" style="flex: 1;">
+                            </div>
+                            <span class="error-message" id="whatsapp-error">Please enter a valid 10-digit WhatsApp number</span>
                         </div>
                     </div>
                     
@@ -519,7 +627,7 @@
                 <a href="pages/privacy-policy.html" style="color: #006478; margin: 0 15px; text-decoration: none;">Privacy Policy</a> |
                 <a href="pages/terms-conditions.html" style="color: #006478; margin: 0 15px; text-decoration: none;">Terms & Conditions</a> |
                 <a href="pages/refund-policy.html" style="color: #006478; margin: 0 15px; text-decoration: none;">Refund Policy</a> |
-                <a href="pages/contact.html" style="color: #006478; margin: 0 15px; text-decoration: none;">Contact Us</a>
+                <a href="pages/contact-1.html" style="color: #006478; margin: 0 15px; text-decoration: none;">Contact Us</a>
             </div>
             <p class="copyright">Copyright © 2025 , The Needles. All rights reserved.</p>
             <p class="disclaimer">This site is not a part of the Meta™ Inc. Additionally, this site is not endorsed by Meta™ in any way. All content provided on this page is for informational and promotional purposes only. Results may vary and are not guaranteed.</p>
@@ -529,6 +637,23 @@
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
+// Check registration status on page load
+(async function checkRegistrationStatus() {
+    try {
+        const response = await fetch('http://localhost:3000/registration-status');
+        const data = await response.json();
+        
+        if (data.success && !data.registration_open) {
+            // Hide registration form
+            document.getElementById('registration-form-container').style.display = 'none';
+            // Show closed notice
+            document.getElementById('registration-closed-notice').style.display = 'block';
+        }
+    } catch (error) {
+        console.log('Could not check registration status, allowing registration');
+    }
+})();
+
 // Form validation
 function validateForm() {
     let isValid = true;
@@ -611,8 +736,8 @@ function getFormData() {
         firstName: document.getElementById('firstName').value.trim(),
         lastName: document.getElementById('lastName').value.trim(),
         email: document.getElementById('email').value.trim(),
-        phone: document.getElementById('phone').value.trim(),
-        whatsapp: document.getElementById('whatsapp').value.trim(),
+        phone: '+91' + document.getElementById('phone').value.trim(),
+        whatsapp: '+91' + document.getElementById('whatsapp').value.trim(),
         city: document.getElementById('city').value.trim(),
         category: document.getElementById('category').value,
         experience: document.getElementById('experience').value,
@@ -667,7 +792,7 @@ async function validateContactDetails(userData) {
 }
 
 // Function to create order using backend API
-async function createRazorpayOrder(userData) {
+async function createRazorpayOrder(userData, amount) {
     try {
         const response = await fetch('http://localhost:3000/create-order', {
             method: 'POST',
@@ -675,7 +800,7 @@ async function createRazorpayOrder(userData) {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                amount: 100, // ₹299 in paise
+                amount: amount,
                 currency: 'INR',
                 receipt: 'webinar_' + Date.now(),
                 notes: {
@@ -703,7 +828,11 @@ async function createRazorpayOrder(userData) {
 }
 
 // Function to handle successful payment
-function handlePaymentSuccess(response, userData) {
+function handlePaymentSuccess(response, userData, amount) {
+    // Show loader overlay
+    const loader = document.getElementById('payment-loader');
+    loader.classList.add('active');
+    
     // Send payment details and user data to backend for verification
     fetch('http://localhost:3000/verify-payment', {
         method: 'POST',
@@ -714,21 +843,25 @@ function handlePaymentSuccess(response, userData) {
             razorpay_order_id: response.razorpay_order_id,
             razorpay_payment_id: response.razorpay_payment_id,
             razorpay_signature: response.razorpay_signature,
-            userData: userData
+            userData: {
+                ...userData,
+                amount: amount
+            }
         })
     })
     .then(res => res.json())
     .then(data => {
         if (data.success) {
-            alert('Payment successful! You will receive webinar details via email and WhatsApp.');
-            // Redirect to success page
-            window.location.href = 'success.html';
+            // Keep loader active and redirect to success page
+            window.location.href = 'pages/success.html';
         } else {
+            loader.classList.remove('active');
             alert('Payment verification failed. Please contact support with payment ID: ' + response.razorpay_payment_id);
         }
     })
     .catch(error => {
         console.error('Payment verification error:', error);
+        loader.classList.remove('active');
         alert('Payment verification failed. Please contact support with payment ID: ' + response.razorpay_payment_id);
     });
 }
@@ -752,10 +885,39 @@ document.getElementById('registration-form').addEventListener('submit', async fu
     // Get form data
     const userData = getFormData();
     
+    // Define payment amount
+    const paymentAmount = 100; // ₹1 in paise (change to 29900 for ₹299)
+    
     // Disable submit button and show loading state
     const submitBtn = document.getElementById('submit-btn');
     submitBtn.disabled = true;
     submitBtn.innerHTML = 'Validating...';
+    
+    // Check if email is already registered
+    try {
+        const emailCheckResponse = await fetch(`${API_BASE_URL}/payment/check-email`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email: userData.email })
+        });
+        
+        const emailCheckData = await emailCheckResponse.json();
+        
+        if (emailCheckData.exists) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Proceed to Payment';
+            alert('This email is already registered for the webinar. Please use a different email or contact support.');
+            return;
+        }
+    } catch (error) {
+        console.error('Error checking email:', error);
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'Proceed to Payment';
+        alert('Unable to verify email. Please try again.');
+        return;
+    }
     
     // Validate contact details with backend
     const isContactValid = await validateContactDetails(userData);
@@ -771,7 +933,7 @@ document.getElementById('registration-form').addEventListener('submit', async fu
     submitBtn.innerHTML = 'Processing...';
     
     // Create order
-    const order = await createRazorpayOrder(userData);
+    const order = await createRazorpayOrder(userData, paymentAmount);
     
     if (!order) {
         // Reset button state if order creation failed
@@ -782,15 +944,15 @@ document.getElementById('registration-form').addEventListener('submit', async fu
     
     // Configure Razorpay options
     var options = {
-        "key": "rzp_live_RWvoJlAdc0Vh7T", // Your Razorpay Key ID
+        "key": "rzp_test_Rh6He9b7BGzzQa", // Your Razorpay Key ID (TEST MODE)
         "amount": order.amount,
         "currency": order.currency,
         "name": "The Needles",
         "description": "Fashion Business Webinar Registration",
-        "image": "https://example.com/your_logo", // Replace with your logo URL
+        "image": "images/NeedlesWordLogo.png", // The Needles Logo
         "order_id": order.id,
         "handler": function (response) {
-            handlePaymentSuccess(response, userData);
+            handlePaymentSuccess(response, userData, paymentAmount);
         },
         "prefill": {
             "name": userData.firstName + ' ' + userData.lastName,
@@ -834,7 +996,7 @@ document.getElementById('registration-form').addEventListener('submit', async fu
             }));
             
             // Redirect to payment failed page
-            window.location.href = 'payment-failed.html';
+            window.location.href = 'pages/payment-failed.html';
         }
     };
     
@@ -876,7 +1038,7 @@ document.getElementById('send-email-otp').addEventListener('click', async functi
     
     const btn = this;
     btn.disabled = true;
-    btn.textContent = 'Sending...';
+    btn.innerHTML = '<span class="btn-loader"></span>Sending...';
     
     try {
         const response = await fetch('http://localhost:3000/send-otp', {
@@ -917,7 +1079,7 @@ document.getElementById('verify-email-otp').addEventListener('click', async func
     
     const btn = this;
     btn.disabled = true;
-    btn.textContent = 'Verifying...';
+    btn.innerHTML = '<span class="btn-loader"></span>Verifying...';
     
     try {
         const response = await fetch('http://localhost:3000/verify-otp', {
